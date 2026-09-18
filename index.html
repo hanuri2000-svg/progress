@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="theme-color" content="#173b6d">
   <title>HSBMA PKG 작업 진행 현황</title>
   <style>
@@ -15,7 +16,26 @@
     .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;min-width:850px;border-collapse:collapse}th,td{text-align:center;padding:10px 7px;border-bottom:1px solid var(--line);font-size:13px}thead th{background:var(--soft);font-weight:800}thead .group{background:#dbe7f4;color:#173b6d}tbody tr:last-child td{border-bottom:0}tbody td+td{border-left:1px solid var(--line)}tbody td:nth-child(2),tbody td:nth-child(5),tbody td:nth-child(8){border-left:3px solid var(--strong)}thead tr:first-child th+th{border-left:3px solid var(--strong)}thead tr:nth-child(2) th+th{border-left:1px solid var(--line)}thead tr:nth-child(2) th:nth-child(4){border-left:3px solid var(--strong)}td:first-child{font-weight:800;white-space:nowrap}.pct{width:68px;border:1px solid #bdc7d4;border-radius:8px;padding:9px 5px;text-align:right;font-size:16px}.avg{font-weight:800;color:var(--navy)}
     .buttons{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px;margin-top:14px}.btn{border:0;border-radius:10px;padding:12px 15px;background:#dfe5ee;color:#344054;font-weight:800}.btn.primary{background:var(--navy);color:#fff}.btn.danger{background:#fee4e2;color:#b42318}.status{font-size:13px;color:var(--muted);margin-right:auto;align-self:center}
     .report{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px}.report-title{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:11px}.report-title h2{margin:0;color:var(--navy);font-size:20px}.report-date{color:var(--muted);font-size:13px}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:13px 0}.kpi{background:var(--soft);padding:12px;border-radius:10px;text-align:center;color:var(--muted);font-size:12px}.kpi b{display:block;margin-top:3px;color:var(--navy);font-size:21px}.empty{color:var(--muted);text-align:center;padding:18px}.version{text-align:center;color:#98a2b3;font-size:11px;padding:16px}
-    @media(max-width:600px){main{padding:10px}.card{padding:11px}.date-row{align-items:stretch;flex-direction:column}.buttons .btn{flex:1}.kpi{padding:9px 4px}.kpi b{font-size:18px}.report{padding:12px}.report-title{align-items:flex-start;flex-direction:column;gap:5px}}
+    @media(max-width:700px){
+      main{padding:10px}.card{padding:11px}.date-row{align-items:stretch;flex-direction:column}.buttons .btn{flex:1}.kpi{padding:9px 4px}.kpi b{font-size:18px}.report{padding:12px}.report-title{align-items:flex-start;flex-direction:column;gap:5px}
+      .table-wrap{overflow:visible;border:0;border-radius:0;background:transparent}
+      .table-wrap table{min-width:0;border-collapse:separate;border-spacing:0}
+      .table-wrap thead{display:none}
+      .table-wrap tbody{display:grid;gap:12px}
+      .table-wrap tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 12px rgba(26,39,64,.05)}
+      .table-wrap tbody td{display:flex;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:9px 4px;border:0!important;font-size:13px}
+      .table-wrap tbody td::before{display:block;color:var(--muted);font-size:11px;font-weight:700;line-height:1.2}
+      .table-wrap tbody td:first-child{grid-column:1/-1;display:block;padding:10px 12px;background:var(--navy);color:#fff;text-align:left;font-size:15px}
+      .table-wrap tbody td:nth-child(2),.table-wrap tbody td:nth-child(3),.table-wrap tbody td:nth-child(4){background:#eef4fb}
+      .table-wrap tbody td:nth-child(5),.table-wrap tbody td:nth-child(6),.table-wrap tbody td:nth-child(7){border-top:3px solid var(--strong)!important;background:#f7f9fc}
+      .table-wrap tbody td:nth-child(3),.table-wrap tbody td:nth-child(4),.table-wrap tbody td:nth-child(6),.table-wrap tbody td:nth-child(7){border-left:1px solid var(--line)!important}
+      .table-wrap tbody td:nth-child(2)::before{content:"본도 · EL"}.table-wrap tbody td:nth-child(3)::before{content:"본도 · POUCH"}.table-wrap tbody td:nth-child(4)::before{content:"본도 · ASSEMBLEY"}
+      .table-wrap tbody td:nth-child(5)::before{content:"미러 · EL"}.table-wrap tbody td:nth-child(6)::before{content:"미러 · POUCH"}.table-wrap tbody td:nth-child(7)::before{content:"미러 · ASSEMBLEY"}
+      .table-wrap tbody td:nth-child(8){grid-column:1/-1;display:flex;flex-direction:row;gap:8px;padding:11px;background:#e6edf6;color:var(--navy);font-size:16px}
+      .table-wrap tbody td:nth-child(8)::before{content:"종합 진척률";color:var(--navy);font-size:13px}
+      .pct{width:76px;max-width:100%;padding:9px 4px}
+      #preview .table-wrap tbody td{min-height:52px}
+    }
   </style>
 </head>
 <body>
@@ -31,7 +51,7 @@
       <div id="report" class="report"><div class="report-title"><h2>HSBMA PKG 작업 진행 현황</h2><span id="reportDate" class="report-date"></span></div><div class="kpis"><div class="kpi">전체 진척률<b id="allAvg">0%</b></div><div class="kpi">본도 평균<b id="bondoAvg">0%</b></div><div class="kpi">미러 평균<b id="mirrorAvg">0%</b></div></div><div class="table-wrap"><table><thead><tr><th rowspan="2">라인</th><th class="group" colspan="3">본도</th><th class="group" colspan="3">미러</th><th rowspan="2">종합</th></tr><tr><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
       <div class="buttons"><button id="backBtn" class="btn">입력 화면</button><button id="shareBtn" class="btn">카카오톡 공유</button><button id="pngBtn" class="btn primary">PNG 이미지 저장</button></div>
     </div></section>
-    <div class="version">HSBMA PKG Progress v1.0.0</div>
+    <div class="version">HSBMA PKG Progress v1.1.0</div>
   </main>
   <script>
     const LINES=[5,6,7,8], FIELDS=['be','bp','ba','me','mp','ma'];
