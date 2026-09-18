@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173b6d">
+  <title>HSBMA PKG 작업 진행 현황</title>
+  <style>
+    :root{--navy:#173b6d;--navy2:#254f83;--bg:#f3f6fa;--card:#fff;--text:#172033;--muted:#667085;--line:#c8d0dc;--strong:#6f7d91;--soft:#eaf0f7}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}
+    header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:max(18px,env(safe-area-inset-top)) 18px 18px}header h1{font-size:20px;margin:0 0 4px}header p{margin:0;opacity:.8;font-size:13px}
+    main{max-width:1100px;margin:auto;padding:16px}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{border:0;padding:11px 15px;border-radius:10px;background:#dfe5ee;color:#526075;font-weight:700}.tab.active{background:var(--navy);color:#fff}
+    .panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid #dbe1ea;border-radius:14px;padding:15px;box-shadow:0 6px 20px rgba(26,39,64,.06)}
+    .date-row{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:14px}.field{display:grid;gap:6px;font-size:13px;color:var(--muted)}input[type=date]{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff;color:var(--text)}
+    .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;min-width:850px;border-collapse:collapse}th,td{text-align:center;padding:10px 7px;border-bottom:1px solid var(--line);font-size:13px}thead th{background:var(--soft);font-weight:800}thead .group{background:#dbe7f4;color:#173b6d}tbody tr:last-child td{border-bottom:0}tbody td+td{border-left:1px solid var(--line)}tbody td:nth-child(2),tbody td:nth-child(5),tbody td:nth-child(8){border-left:3px solid var(--strong)}thead tr:first-child th+th{border-left:3px solid var(--strong)}thead tr:nth-child(2) th+th{border-left:1px solid var(--line)}thead tr:nth-child(2) th:nth-child(4){border-left:3px solid var(--strong)}td:first-child{font-weight:800;white-space:nowrap}.pct{width:68px;border:1px solid #bdc7d4;border-radius:8px;padding:9px 5px;text-align:right;font-size:16px}.avg{font-weight:800;color:var(--navy)}
+    .buttons{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px;margin-top:14px}.btn{border:0;border-radius:10px;padding:12px 15px;background:#dfe5ee;color:#344054;font-weight:800}.btn.primary{background:var(--navy);color:#fff}.btn.danger{background:#fee4e2;color:#b42318}.status{font-size:13px;color:var(--muted);margin-right:auto;align-self:center}
+    .report{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px}.report-title{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:11px}.report-title h2{margin:0;color:var(--navy);font-size:20px}.report-date{color:var(--muted);font-size:13px}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:13px 0}.kpi{background:var(--soft);padding:12px;border-radius:10px;text-align:center;color:var(--muted);font-size:12px}.kpi b{display:block;margin-top:3px;color:var(--navy);font-size:21px}.empty{color:var(--muted);text-align:center;padding:18px}.version{text-align:center;color:#98a2b3;font-size:11px;padding:16px}
+    @media(max-width:600px){main{padding:10px}.card{padding:11px}.date-row{align-items:stretch;flex-direction:column}.buttons .btn{flex:1}.kpi{padding:9px 4px}.kpi b{font-size:18px}.report{padding:12px}.report-title{align-items:flex-start;flex-direction:column;gap:5px}}
+  </style>
+</head>
+<body>
+  <header><h1>HSBMA PKG 작업 진행 현황</h1><p>LINE 5–8 · 본도 / 미러</p></header>
+  <main>
+    <nav class="tabs"><button class="tab active" data-tab="input">진척률 입력</button><button class="tab" data-tab="preview">공유 이미지 미리보기</button></nav>
+    <section id="input" class="panel active"><div class="card">
+      <div class="date-row"><label class="field">기준일<input id="workDate" type="date"></label><button id="loadBtn" class="btn">해당 날짜 불러오기</button></div>
+      <div class="table-wrap"><table><thead><tr><th rowspan="2">라인</th><th class="group" colspan="3">본도 진척률</th><th class="group" colspan="3">미러 진척률</th><th rowspan="2">종합</th></tr><tr><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th></tr></thead><tbody id="inputBody"></tbody></table></div>
+      <div class="buttons"><span id="saveStatus" class="status">입력값은 이 기기에 저장돼</span><button id="clearBtn" class="btn danger">현재 날짜 초기화</button><button id="saveBtn" class="btn">오늘 기록 저장</button><button id="previewBtn" class="btn primary">이미지 미리보기</button></div>
+    </div></section>
+    <section id="preview" class="panel"><div class="card">
+      <div id="report" class="report"><div class="report-title"><h2>HSBMA PKG 작업 진행 현황</h2><span id="reportDate" class="report-date"></span></div><div class="kpis"><div class="kpi">전체 진척률<b id="allAvg">0%</b></div><div class="kpi">본도 평균<b id="bondoAvg">0%</b></div><div class="kpi">미러 평균<b id="mirrorAvg">0%</b></div></div><div class="table-wrap"><table><thead><tr><th rowspan="2">라인</th><th class="group" colspan="3">본도</th><th class="group" colspan="3">미러</th><th rowspan="2">종합</th></tr><tr><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
+      <div class="buttons"><button id="backBtn" class="btn">입력 화면</button><button id="shareBtn" class="btn">카카오톡 공유</button><button id="pngBtn" class="btn primary">PNG 이미지 저장</button></div>
+    </div></section>
+    <div class="version">HSBMA PKG Progress v1.0.0</div>
+  </main>
+  <script>
+    const LINES=[5,6,7,8], FIELDS=['be','bp','ba','me','mp','ma'];
+    const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+    const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+    const clamp=v=>Math.max(0,Math.min(100,Number(v)||0));
+    const key=()=>`hsbma-pkg:${$('#workDate').value}`;
+    $('#workDate').value=today();
+    $('#inputBody').innerHTML=LINES.map(line=>`<tr data-line="${line}"><td>LINE ${line}</td>${FIELDS.map(f=>`<td><input class="pct" inputmode="decimal" type="number" min="0" max="100" step="1" data-field="${f}" value="0">%</td>`).join('')}<td class="avg">0%</td></tr>`).join('');
+    const read=()=>LINES.map(line=>{const tr=$(`tr[data-line="${line}"]`);const vals=FIELDS.map(f=>clamp(tr.querySelector(`[data-field="${f}"]`).value));return {line,vals,avg:vals.reduce((a,b)=>a+b,0)/6}});
+    function update(){const rows=read();rows.forEach(r=>{$(`tr[data-line="${r.line}"] .avg`).textContent=`${fmt(r.avg)}%`});return rows}
+    const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
+    function save(){localStorage.setItem(key(),JSON.stringify(read()));$('#saveStatus').textContent=`${$('#workDate').value} 기록 저장 완료`;setTimeout(()=>$('#saveStatus').textContent='입력값은 이 기기에 저장돼',1800)}
+    function load(){const raw=localStorage.getItem(key());const rows=raw?JSON.parse(raw):LINES.map(line=>({line,vals:[0,0,0,0,0,0]}));rows.forEach(r=>{const tr=$(`tr[data-line="${r.line}"]`);if(tr)FIELDS.forEach((f,i)=>tr.querySelector(`[data-field="${f}"]`).value=clamp(r.vals[i]))});update()}
+    function summary(){const rows=update(), all=rows.flatMap(r=>r.vals), bondo=rows.flatMap(r=>r.vals.slice(0,3)), mirror=rows.flatMap(r=>r.vals.slice(3));const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;return {rows,all:avg(all),bondo:avg(bondo),mirror:avg(mirror)}}
+    function buildReport(){const s=summary();$('#reportDate').textContent=$('#workDate').value.replaceAll('-','. ')+' 기준';$('#allAvg').textContent=fmt(s.all)+'%';$('#bondoAvg').textContent=fmt(s.bondo)+'%';$('#mirrorAvg').textContent=fmt(s.mirror)+'%';$('#reportBody').innerHTML=s.rows.map(r=>`<tr><td>LINE ${r.line}</td>${r.vals.map(v=>`<td>${fmt(v)}%</td>`).join('')}<td class="avg">${fmt(r.avg)}%</td></tr>`).join('')}
+    function tab(id){$$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));$$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));if(id==='preview')buildReport();scrollTo({top:0,behavior:'smooth'})}
+    $$('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$$('.pct').forEach(i=>{i.oninput=()=>{i.value=clamp(i.value);update()}});$('#loadBtn').onclick=load;$('#saveBtn').onclick=save;$('#previewBtn').onclick=()=>{save();tab('preview')};$('#backBtn').onclick=()=>tab('input');$('#clearBtn').onclick=()=>{if(confirm('현재 날짜의 입력값을 모두 0%로 초기화할까?')){localStorage.removeItem(key());load()}};
+    function drawCanvas(){const s=summary(), W=1600,H=850,c=document.createElement('canvas'),x=c.getContext('2d');c.width=W;c.height=H;x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#173b6d';x.fillRect(0,0,W,110);x.fillStyle='#fff';x.font='700 38px Arial';x.fillText('HSBMA PKG 작업 진행 현황',55,66);x.font='22px Arial';x.fillText($('#workDate').value.replaceAll('-','. ')+' 기준',1290,66);
+      const k=[['전체 진척률',s.all],['본도 평균',s.bondo],['미러 평균',s.mirror]];k.forEach((a,i)=>{const bx=55+i*505;x.fillStyle='#eaf0f7';x.fillRect(bx,140,470,110);x.fillStyle='#667085';x.font='22px Arial';x.textAlign='center';x.fillText(a[0],bx+235,178);x.fillStyle='#173b6d';x.font='700 38px Arial';x.fillText(fmt(a[1])+'%',bx+235,226)});x.textAlign='left';
+      const left=55,top=290,rowH=90,col=[160,170,170,205,170,170,205,180],headers=['LINE','EL','POUCH','ASSEMBLEY','EL','POUCH','ASSEMBLEY','종합'],total=col.reduce((a,b)=>a+b,0);x.fillStyle='#dbe7f4';x.fillRect(left,top,total,62);x.fillStyle='#173b6d';x.font='700 24px Arial';x.textAlign='center';x.fillText('본도',left+160+(170+170+205)/2,top+39);x.fillText('미러',left+160+545+(170+170+205)/2,top+39);x.fillStyle='#eaf0f7';x.fillRect(left,top+62,total,58);let pos=left;headers.forEach((h,i)=>{x.fillStyle='#172033';x.font='700 19px Arial';x.fillText(h,pos+col[i]/2,top+100);pos+=col[i]});s.rows.forEach((r,ri)=>{let px=left,y=top+120+ri*rowH;x.fillStyle=ri%2?'#f7f9fc':'#fff';x.fillRect(left,y,total,rowH);const vals=[`LINE ${r.line}`,...r.vals.map(v=>fmt(v)+'%'),fmt(r.avg)+'%'];vals.forEach((v,i)=>{x.fillStyle=i===7?'#173b6d':'#172033';x.font=(i===0||i===7?'700 ':'')+'22px Arial';x.fillText(v,px+col[i]/2,y+54);px+=col[i]})});x.strokeStyle='#c8d0dc';x.lineWidth=2;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(left,top+120+i*rowH);x.lineTo(left+total,top+120+i*rowH);x.stroke()}pos=left;for(let i=0;i<=col.length;i++){x.strokeStyle=(i===1||i===4||i===7)?'#6f7d91':'#c8d0dc';x.lineWidth=(i===1||i===4||i===7)?5:2;x.beginPath();x.moveTo(pos,top+62);x.lineTo(pos,top+120+4*rowH);x.stroke();if(i<col.length)pos+=col[i]}x.textAlign='left';return c}
+    async function pngBlob(){return await new Promise(ok=>drawCanvas().toBlob(ok,'image/png',1))}
+    $('#pngBtn').onclick=async()=>{const blob=await pngBlob(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`HSBMA_PKG_${$('#workDate').value}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)};
+    $('#shareBtn').onclick=async()=>{const blob=await pngBlob(),file=new File([blob],`HSBMA_PKG_${$('#workDate').value}.png`,{type:'image/png'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:'HSBMA PKG 작업 진행 현황',files:[file]})}else{$('#pngBtn').click();alert('이미지를 저장했어. 카카오톡에서 첨부해줘.')}};
+    load();
+  </script>
+</body>
+</html>
