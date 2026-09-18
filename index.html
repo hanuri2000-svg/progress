@@ -49,9 +49,10 @@
     </div></section>
     <section id="preview" class="panel"><div class="card">
       <div id="report" class="report"><div class="report-title"><h2>HSBMA PKG 작업 진행 현황</h2><span id="reportDate" class="report-date"></span></div><div class="kpis"><div class="kpi">전체 진척률<b id="allAvg">0%</b></div><div class="kpi">본도 평균<b id="bondoAvg">0%</b></div><div class="kpi">미러 평균<b id="mirrorAvg">0%</b></div></div><div class="table-wrap"><table><thead><tr><th rowspan="2">라인</th><th class="group" colspan="3">본도</th><th class="group" colspan="3">미러</th><th rowspan="2">종합</th></tr><tr><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th><th>EL</th><th>POUCH</th><th>ASSEMBLEY</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
-      <div class="buttons"><button id="backBtn" class="btn">입력 화면</button><button id="shareBtn" class="btn">카카오톡 공유</button><button id="pngBtn" class="btn primary">PNG 이미지 저장</button></div>
+      <p class="empty">아이폰은 공유창에서 ‘이미지 저장’을 누르면 사진 앱에 저장돼.</p>
+      <div class="buttons"><button id="backBtn" class="btn">입력 화면</button><button id="shareBtn" class="btn">카카오톡 공유</button><button id="pngBtn" class="btn primary">사진첩에 저장</button></div>
     </div></section>
-    <div class="version">HSBMA PKG Progress v1.1.0</div>
+    <div class="version">HSBMA PKG Progress v1.1.1</div>
   </main>
   <script>
     const LINES=[5,6,7,8], FIELDS=['be','bp','ba','me','mp','ma'];
@@ -74,8 +75,10 @@
       const k=[['전체 진척률',s.all],['본도 평균',s.bondo],['미러 평균',s.mirror]];k.forEach((a,i)=>{const bx=55+i*505;x.fillStyle='#eaf0f7';x.fillRect(bx,140,470,110);x.fillStyle='#667085';x.font='22px Arial';x.textAlign='center';x.fillText(a[0],bx+235,178);x.fillStyle='#173b6d';x.font='700 38px Arial';x.fillText(fmt(a[1])+'%',bx+235,226)});x.textAlign='left';
       const left=55,top=290,rowH=90,col=[160,170,170,205,170,170,205,180],headers=['LINE','EL','POUCH','ASSEMBLEY','EL','POUCH','ASSEMBLEY','종합'],total=col.reduce((a,b)=>a+b,0);x.fillStyle='#dbe7f4';x.fillRect(left,top,total,62);x.fillStyle='#173b6d';x.font='700 24px Arial';x.textAlign='center';x.fillText('본도',left+160+(170+170+205)/2,top+39);x.fillText('미러',left+160+545+(170+170+205)/2,top+39);x.fillStyle='#eaf0f7';x.fillRect(left,top+62,total,58);let pos=left;headers.forEach((h,i)=>{x.fillStyle='#172033';x.font='700 19px Arial';x.fillText(h,pos+col[i]/2,top+100);pos+=col[i]});s.rows.forEach((r,ri)=>{let px=left,y=top+120+ri*rowH;x.fillStyle=ri%2?'#f7f9fc':'#fff';x.fillRect(left,y,total,rowH);const vals=[`LINE ${r.line}`,...r.vals.map(v=>fmt(v)+'%'),fmt(r.avg)+'%'];vals.forEach((v,i)=>{x.fillStyle=i===7?'#173b6d':'#172033';x.font=(i===0||i===7?'700 ':'')+'22px Arial';x.fillText(v,px+col[i]/2,y+54);px+=col[i]})});x.strokeStyle='#c8d0dc';x.lineWidth=2;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(left,top+120+i*rowH);x.lineTo(left+total,top+120+i*rowH);x.stroke()}pos=left;for(let i=0;i<=col.length;i++){x.strokeStyle=(i===1||i===4||i===7)?'#6f7d91':'#c8d0dc';x.lineWidth=(i===1||i===4||i===7)?5:2;x.beginPath();x.moveTo(pos,top+62);x.lineTo(pos,top+120+4*rowH);x.stroke();if(i<col.length)pos+=col[i]}x.textAlign='left';return c}
     async function pngBlob(){return await new Promise(ok=>drawCanvas().toBlob(ok,'image/png',1))}
-    $('#pngBtn').onclick=async()=>{const blob=await pngBlob(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`HSBMA_PKG_${$('#workDate').value}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)};
-    $('#shareBtn').onclick=async()=>{const blob=await pngBlob(),file=new File([blob],`HSBMA_PKG_${$('#workDate').value}.png`,{type:'image/png'});if(navigator.canShare?.({files:[file]})){await navigator.share({title:'HSBMA PKG 작업 진행 현황',files:[file]})}else{$('#pngBtn').click();alert('이미지를 저장했어. 카카오톡에서 첨부해줘.')}};
+    function downloadPng(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`HSBMA_PKG_${$('#workDate').value}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+    async function nativeShare(){const blob=await pngBlob(),file=new File([blob],`HSBMA_PKG_${$('#workDate').value}.png`,{type:'image/png'});if(navigator.canShare?.({files:[file]})){try{await navigator.share({title:'HSBMA PKG 작업 진행 현황',files:[file]})}catch(e){if(e.name!=='AbortError')downloadPng(blob)}}else{downloadPng(blob);alert('공유 기능을 지원하지 않아 PNG 파일로 저장했어.')}}
+    $('#pngBtn').onclick=nativeShare;
+    $('#shareBtn').onclick=nativeShare;
     load();
   </script>
 </body>
