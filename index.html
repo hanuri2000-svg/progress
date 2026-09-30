@@ -46,7 +46,7 @@
       <p class="share-note">아이폰은 공유창에서 ‘이미지 저장’을 누르면 사진 앱에 저장돼.</p>
       <div class="buttons"><button id="backBtn" class="btn">입력 화면</button><button id="shareBtn" class="btn">카카오톡 공유</button><button id="pngBtn" class="btn primary">사진첩에 저장</button></div>
     </div></section>
-    <div class="version">HSBMA Progress v1.3.3</div></div>
+    <div class="version">HSBMA Progress v1.3.4</div></div>
   </main>
   <script>
     const LINES=[5,6,7,8];
@@ -90,7 +90,15 @@
     function drawCanvas(){
       const c=config(),s=summary(),fs=fields(),W=1600,H=850,cv=document.createElement('canvas'),x=cv.getContext('2d');cv.width=W;cv.height=H;x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#173b6d';x.fillRect(0,0,W,110);x.fillStyle='#fff';x.font='700 38px Arial';x.fillText(`HSBMA ${c.name} 작업 진행 현황`,55,66);x.font='22px Arial';x.fillText($('#workDate').value.replaceAll('-','. ')+' 기준',1290,66);
       const cards=[['전체 진척률',s.all],...s.groups.filter(g=>g.name).map(g=>[`${g.name} 평균`,g.value])],gap=22,cardW=(1490-gap*(cards.length-1))/cards.length;cards.forEach((a,i)=>{const bx=55+i*(cardW+gap);x.fillStyle='#eaf0f7';x.fillRect(bx,140,cardW,110);x.fillStyle='#667085';x.font='22px Arial';x.textAlign='center';x.fillText(a[0],bx+cardW/2,178);x.fillStyle='#173b6d';x.font='700 38px Arial';x.fillText(fmt(a[1])+'%',bx+cardW/2,226)});
-      const left=55,top=290,rowH=90,lineW=190,avgW=190,dataW=(1490-lineW-avgW)/fs.length,col=[lineW,...fs.map(()=>dataW),avgW],headers=['LINE',...fs.map(f=>f[1]),'종합'],total=col.reduce((a,b)=>a+b,0);x.fillStyle='#eaf0f7';x.fillRect(left,top,total,100);let pos=left;x.textAlign='center';headers.forEach((h,i)=>{x.fillStyle='#172033';x.font='700 20px Arial';x.fillText(h,pos+col[i]/2,top+60);pos+=col[i]});s.rows.forEach((r,ri)=>{let px=left,y=top+100+ri*rowH;x.fillStyle=ri%2?'#f7f9fc':'#fff';x.fillRect(left,y,total,rowH);const vals=[`LINE ${r.line}`,...r.vals.map(v=>fmt(v)+'%'),fmt(r.avg)+'%'];vals.forEach((v,i)=>{x.fillStyle=i===vals.length-1?'#173b6d':'#172033';x.font=(i===0||i===vals.length-1?'700 ':'')+'22px Arial';x.fillText(v,px+col[i]/2,y+54);px+=col[i]})});x.strokeStyle='#c8d0dc';x.lineWidth=2;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(left,top+100+i*rowH);x.lineTo(left+total,top+100+i*rowH);x.stroke()}pos=left;for(let i=0;i<=col.length;i++){x.strokeStyle=(i===1||i===col.length-1)?'#6f7d91':'#c8d0dc';x.lineWidth=(i===1||i===col.length-1)?5:2;x.beginPath();x.moveTo(pos,top);x.lineTo(pos,top+100+4*rowH);x.stroke();if(i<col.length)pos+=col[i]}x.textAlign='left';return cv
+      const left=55,top=285,rowH=88,lineW=190,avgW=190,dataW=(1490-lineW-avgW)/fs.length,col=[lineW,...fs.map(()=>dataW),avgW],headers=['LINE',...fs.map(f=>f[1]),'종합'],total=col.reduce((a,b)=>a+b,0),grouped=c.groups.length>1,groupH=grouped?58:0,fieldH=grouped?62:100,headerH=groupH+fieldH,rowTop=top+headerH;
+      x.fillStyle='#eaf0f7';x.fillRect(left,top,total,headerH);
+      if(grouped){
+        x.fillStyle='#dbe7f4';x.fillRect(left+lineW,top,total-lineW-avgW,groupH);let gx=left+lineW;x.fillStyle='#173b6d';x.font='700 23px Arial';x.textAlign='center';c.groups.forEach(g=>{const gw=g.fields.length*dataW;x.fillText(g.name,gx+gw/2,top+37);gx+=gw});x.strokeStyle='#c8d0dc';x.lineWidth=2;x.beginPath();x.moveTo(left+lineW,top+groupH);x.lineTo(left+total-avgW,top+groupH);x.stroke();
+      }
+      let pos=left;x.textAlign='center';headers.forEach((h,i)=>{const middle=i===0||i===headers.length-1;x.fillStyle='#172033';x.font='700 20px Arial';x.fillText(h,pos+col[i]/2,middle?top+headerH/2+7:top+groupH+fieldH/2+7);pos+=col[i]});
+      s.rows.forEach((r,ri)=>{let px=left,y=rowTop+ri*rowH;x.fillStyle=ri%2?'#f7f9fc':'#fff';x.fillRect(left,y,total,rowH);const vals=[`LINE ${r.line}`,...r.vals.map(v=>fmt(v)+'%'),fmt(r.avg)+'%'];vals.forEach((v,i)=>{x.fillStyle=i===vals.length-1?'#173b6d':'#172033';x.font=(i===0||i===vals.length-1?'700 ':'')+'22px Arial';x.fillText(v,px+col[i]/2,y+53);px+=col[i]})});
+      x.strokeStyle='#c8d0dc';x.lineWidth=2;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(left,rowTop+i*rowH);x.lineTo(left+total,rowTop+i*rowH);x.stroke()}
+      const strong=new Set([1,col.length-1]);if(grouped){let boundary=1;for(let i=0;i<c.groups.length-1;i++){boundary+=c.groups[i].fields.length;strong.add(boundary)}}pos=left;for(let i=0;i<=col.length;i++){const isStrong=strong.has(i);x.strokeStyle=isStrong?'#6f7d91':'#c8d0dc';x.lineWidth=isStrong?5:2;const internalGroup=grouped&&i>1&&i<col.length-1&&!isStrong;x.beginPath();x.moveTo(pos,internalGroup?top+groupH:top);x.lineTo(pos,rowTop+4*rowH);x.stroke();if(i<col.length)pos+=col[i]}x.textAlign='left';return cv
     }
     async function pngBlob(){return await new Promise(ok=>drawCanvas().toBlob(ok,'image/png',1))}
     function downloadPng(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`HSBMA_${config().name.replaceAll(' ','_')}_${$('#workDate').value}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
