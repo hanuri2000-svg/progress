@@ -106,4 +106,17 @@
     $('#workDate').value=today();showDate();$$('.project-btn').forEach(b=>b.onclick=()=>{$('#project').value=b.dataset.project;$('#home').style.display='none';$('#appView').style.display='block';tab('input');render()});$('#projectChange').onclick=()=>{$('#appView').style.display='none';$('#home').style.display='block';$('#headerSub').textContent='프로젝트를 선택해줘';scrollTo({top:0,behavior:'smooth'})};$('#workDate').onchange=()=>{showDate();load()};$$('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$('#previewBtn').onclick=()=>{save();tab('preview')};$('#backBtn').onclick=()=>tab('input');$('#clearBtn').onclick=()=>{if(confirm(`${config().name} · ${$('#workDate').value} 입력값을 모두 0%로 초기화할까?`)){localStorage.removeItem(key());load()}};$('#pngBtn').onclick=nativeShare;$('#shareBtn').onclick=nativeShare;
   </script>
 </body>
+<script>
+const _resetKey135=()=>`hsbma-reset:${$('#project').value}:${$('#workDate').value}`;
+const _zeroRows135=()=>LINES.map(line=>({line,vals:fields().map(()=>0)}));
+const _allZero135=rows=>Array.isArray(rows)&&rows.every(r=>Array.isArray(r.vals)&&r.vals.every(v=>clamp(v)===0));
+const _keyPrefix135=()=>$('#project').value==='pkg'?'hsbma-pkg:':'hsbma-tap-welding:';
+function _latestPrevious135(){const prefix=_keyPrefix135(),selected=$('#workDate').value,dates=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k?.startsWith(prefix)){const date=k.slice(prefix.length);if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&date<selected)dates.push(date)}}dates.sort().reverse();for(const date of dates){const raw=localStorage.getItem(prefix+date);if(raw)try{return {date,rows:JSON.parse(raw)}}catch(e){}}return null}
+const _originalSave135=save;
+save=function(){localStorage.removeItem(_resetKey135());_originalSave135()};
+load=function(){let raw=localStorage.getItem(key()),rows=raw?JSON.parse(raw):null,carried=null;const previous=_latestPrevious135(),manuallyReset=localStorage.getItem(_resetKey135());if((!rows||(_allZero135(rows)&&!manuallyReset))&&previous&&!_allZero135(previous.rows)){carried=previous;rows=previous.rows;raw=JSON.stringify(rows);localStorage.setItem(key(),raw)}const fs=fields();rows=rows||_zeroRows135();rows.forEach(r=>{const tr=$(`#inputBody tr[data-line="${r.line}"]`);if(tr)fs.forEach((f,i)=>tr.querySelector(`[data-field="${f[0]}"]`).value=clamp(r.vals[i]))});update();$('#saveStatus').textContent=carried?`${config().name} · ${carried.date} 최근 기록을 ${$('#workDate').value}에 이어받음`:raw?`${config().name} · ${$('#workDate').value} 기록 자동 불러옴`:`${config().name} · ${$('#workDate').value} 새 기록`};
+$('#clearBtn').onclick=()=>{if(confirm(`${config().name} · ${$('#workDate').value} 입력값을 모두 0%로 초기화할까?`)){localStorage.setItem(_resetKey135(),'1');localStorage.setItem(key(),JSON.stringify(_zeroRows135()));load()}};
+$('.version').textContent='HSBMA Progress v1.3.5';
+</script>
+
 </html>
